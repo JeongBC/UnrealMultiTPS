@@ -156,6 +156,44 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 }
 
 ```
+
+__Game State__
+```c++
+void AJGameModeBase::CheckWaveState()
+{
+	bool bIsPreparingForWave = GetWorldTimerManager().IsTimerActive(TimerHandle_NextWaveStart);
+
+	if (NrOfBotsToSpawn > 0 || bIsPreparingForWave)
+	{
+		return;
+	}
+
+	bool bIsAnyBotAlive = false;
+
+	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+	{
+		APawn* TestPawn = It->Get();
+		if (TestPawn == nullptr || TestPawn->IsPlayerControlled())
+		{
+			continue;
+		}
+
+		UHealthComponent* HealthComp = Cast<UHealthComponent>(TestPawn->GetComponentByClass(UHealthComponent::StaticClass()));
+		if (HealthComp && HealthComp->GetHealth() > 0.0f)
+		{
+			bIsAnyBotAlive = true;
+			break;
+		}
+	}
+
+	if (!bIsAnyBotAlive)
+	{
+		SetWaveState(EWaveState::WaveComplete);
+
+		PrepareForNextWave();
+	}
+}
+```
   ------------
 ## How to Play
 
