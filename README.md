@@ -110,7 +110,7 @@ void APlayerCharacter::OnHealthChanged(UHealthComponent* HelathComp, float Healt
 }
 ```
 
-__ Heal & Check Friendly Fire (OnHealthChanged)__
+__Heal & Check Friendly Fire (OnHealthChanged)__
 ```c++
 //회복 함수
 void UHealthComponent::Heal(float HealAmount)
