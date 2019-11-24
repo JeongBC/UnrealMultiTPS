@@ -10,7 +10,7 @@ https://youtu.be/JVfdwmm4Mkw
 
 ------------  
 ## Important code(script)
-__Gun Interactive Script__
+__Fire Function(for Multi)__
 
 ```c++
 void AWeapon::Fire()
