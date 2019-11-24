@@ -89,8 +89,10 @@ void AWeapon::Fire()
 	
 }
 ```
-__OnHealthChanged Function Override(in UE4)__
 
+
+
+__OnHealthChanged Function Override(in UE4)__
 ```c++
 void APlayerCharacter::OnHealthChanged(UHealthComponent* HelathComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
@@ -106,6 +108,53 @@ void APlayerCharacter::OnHealthChanged(UHealthComponent* HelathComp, float Healt
 		SetLifeSpan(10.0f);
 	}
 }
+```
+
+__ Heal & Check Friendly Fire (OnHealthChanged)__
+```c++
+//회복 함수
+void UHealthComponent::Heal(float HealAmount)
+{
+	if (HealAmount <= 0.0f || Health<=0.0f)
+	{
+		return;
+	}
+	Health = FMath::Clamp(Health + HealAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Log, TEXT("체력 회복: %s"), *FString::SanitizeFloat(HealAmount));
+
+	//체력변경 델리게이트 호출 damage 인자값에 마이너스를 넣어 회복
+	OnHealthChanged.Broadcast(this, Health, -HealAmount, nullptr, nullptr, nullptr);
+}
+
+//아군 오인사격
+bool UHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
+{
+	if (ActorA == nullptr || ActorB == nullptr)
+	{
+		// Assume Friendly
+		return true;
+	}
+
+	UHealthComponent* HealthCompA = Cast<UHealthComponent>(ActorA->GetComponentByClass(UHealthComponent::StaticClass()));
+	UHealthComponent* HealthCompB = Cast<UHealthComponent>(ActorB->GetComponentByClass(UHealthComponent::StaticClass()));
+
+	if (HealthCompA == nullptr || HealthCompB == nullptr)
+	{
+		// Assume friendly
+		return true;
+	}
+
+	return HealthCompA->TeamNum == HealthCompB->TeamNum;
+}
+
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UHealthComponent, Health);
+	//DOREPLIFETIME(ASCharacter, bDied);
+}
+
 ```
   ------------
 ## How to Play
