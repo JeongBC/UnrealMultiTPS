@@ -89,7 +89,24 @@ void AWeapon::Fire()
 	
 }
 ```
+__OnHealthChanged Function Override(in UE4)__
 
+```c++
+void APlayerCharacter::OnHealthChanged(UHealthComponent* HelathComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Health <= 0.0f && !bDied)
+	{
+		//죽었을떄
+		bDied = true;
+
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		DetachFromControllerPendingDestroy();
+		SetLifeSpan(10.0f);
+	}
+}
+```
   ------------
 ## How to Play
 
