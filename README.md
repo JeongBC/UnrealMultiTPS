@@ -157,7 +157,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 ```
 
-__Game State__
+__Change Game State__
 ```c++
 void AJGameModeBase::CheckWaveState()
 {
